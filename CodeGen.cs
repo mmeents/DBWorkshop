@@ -18,6 +18,7 @@ namespace dbWorkshop {
     #region On Tree View Active Selection Change 
 
     public void tvMain_OnActiveSelectionChange(TreeNode focusNode) {
+      try { 
       Int32 iCurLevel = focusNode.Level;
       switch(focusNode.ImageIndex) {
         case 0: PrepareServer(focusNode); break;
@@ -27,7 +28,10 @@ namespace dbWorkshop {
         case 4: PrepareView(focusNode); break;
         case 5: PrepareStProc(focusNode); break;
         case 6: PrepareFunction(focusNode); break;
-      }      
+      }     
+        } catch (Exception ex) { 
+          MessageBox.Show(ex.Message);
+        }
     }
 
     public void PrepareServer(TreeNode tnServer) {
@@ -658,7 +662,7 @@ namespace dbWorkshop {
     }
 
     public string GetAbout() {
-      return "--  Generated on " + DateTime.Now.toStrDate() + " via dbWorkshop " + Environment.NewLine;
+      return "-- Generated on " + DateTime.Now.toStrDate() + " via dbWorkshop " + Environment.NewLine;
     }
 
     public string GetTableCreate(RCData d, string sDB, string sTableName){ 
@@ -666,8 +670,8 @@ namespace dbWorkshop {
       d.CI.InitialCatalog = sDB;
       DataSet ds = d.GetDataSet(
         "DECLARE @object_name SYSNAME, @object_id INT, @SQL NVARCHAR(MAX)"+Environment.NewLine+
-        "  SELECT  @object_name = '[' + OBJECT_SCHEMA_NAME(o.[object_id]) + '].[' + OBJECT_NAME([object_id]) + ']', "+Environment.NewLine+
-        "    @object_id = [object_id] FROM ( SELECT [object_id] = OBJECT_ID('"+sTableName+"', 'U') ) o  "+Environment.NewLine+
+       $"  SELECT  @object_name = '[' + OBJECT_SCHEMA_NAME(o.[object_id], DB_ID ('{sDB}')) + '].[' + OBJECT_NAME([object_id], DB_ID ('{sDB}')) + ']', " + Environment.NewLine+
+        "    @object_id = [object_id] FROM ( SELECT [object_id] = OBJECT_ID('"+sDB+"."+sTableName+"', 'U') ) o  "+Environment.NewLine+
         "  SELECT @SQL = 'CREATE TABLE ' + @object_name + '(' + CHAR(13) + CHAR(10) + "+Environment.NewLine+
         "    STUFF((SELECT CHAR(13) + CHAR(10) +  '  ,[' + c.name + '] ' +   "+Environment.NewLine+
         "      CASE WHEN c.is_computed = 1 "+Environment.NewLine+
@@ -684,8 +688,8 @@ namespace dbWorkshop {
         "            WHEN tp.name = 'decimal' THEN '(' + CAST(c.[precision] AS VARCHAR(5)) + ',' + CAST(c.scale AS VARCHAR(5)) + ')'  "+Environment.NewLine+
         "            ELSE '' "+Environment.NewLine+
         "          END +  "+Environment.NewLine+
-        "          CASE WHEN c.collation_name IS NOT NULL AND c.system_type_id = c.user_type_id   "+Environment.NewLine+
-        "            THEN ' COLLATE ' + c.collation_name ELSE '' END +  "+Environment.NewLine+
+  //      "          CASE WHEN c.collation_name IS NOT NULL AND c.system_type_id = c.user_type_id   "+Environment.NewLine+
+  //      "            THEN ' COLLATE ' + c.collation_name ELSE '' END +  "+Environment.NewLine+
         "              CASE WHEN c.is_nullable = 1 THEN ' NULL' ELSE ' NOT NULL' END +  "+Environment.NewLine+
         "              CASE WHEN c.default_object_id != 0   "+Environment.NewLine+
         "                THEN ' CONSTRAINT [' + OBJECT_NAME(c.default_object_id) + '] DEFAULT ' + OBJECT_DEFINITION(c.default_object_id)  "+Environment.NewLine+
@@ -696,8 +700,8 @@ namespace dbWorkshop {
         "                ELSE ''  "+Environment.NewLine+
         "              END +  "+Environment.NewLine+
         "              CASE WHEN c.is_identity = 1  "+Environment.NewLine+ 
-        "                THEN ' IDENTITY(' + CAST(IDENTITYPROPERTY(c.[object_id], 'SeedValue') AS VARCHAR(5)) + ',' +   "+Environment.NewLine+
-        "                  CAST(IDENTITYPROPERTY(c.[object_id], 'IncrementValue') AS VARCHAR(5)) + ')'   "+Environment.NewLine+
+        "                THEN ' IDENTITY(' + CAST(IDENTITYPROPERTY(c.[object_id], 'SeedValue') AS VARCHAR(50)) + ',' +   "+Environment.NewLine+
+        "                  CAST(IDENTITYPROPERTY(c.[object_id], 'IncrementValue') AS VARCHAR(50)) + ')'   "+Environment.NewLine+
         "                ELSE ''   "+Environment.NewLine+
         "              END   "+Environment.NewLine+
         "          END  "+Environment.NewLine+
