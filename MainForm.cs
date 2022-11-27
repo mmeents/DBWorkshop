@@ -9,32 +9,33 @@ using DBWorkshop.Models;
 
 
 namespace DBWorkshop {
-  public partial class MainForm : Form {    
+  public partial class MainForm : Form {
+    #region Form Vars and startup
     private readonly string _key = "E86RUP469F0R411xAC902514C082388";
     private readonly string _conFileName = "DBWorkshop";
     private readonly AppKey _appKey;
     private readonly DBConnectionService _dbConnectionService;
+    public DbConnectionInfo? EditCon { get; set; }
     public MainForm() {
       InitializeComponent();
       _appKey = new AppKey(_key);
       _dbConnectionService = new DBConnectionService(_appKey, _conFileName);
+      SetupMainWelcomeTab();     
+    }
+    private void MainForm_Shown(object sender, EventArgs e) { }
+    private void SetupMainWelcomeTab() {
       if (_dbConnectionService.GetConnectionCountOnFile() == 0) {
-        tabBuildIt.Hide();        
-      } else { 
+        tabBuildIt.Hide();
+      } else {
         listBox1.Items.Clear();
         var cons = _dbConnectionService.GetConnectionNames();
         foreach (var consName in cons) {
           listBox1.Items.Add(consName);
         }
       }
-      //DbConnectionInfo? ConnInfo = _dbConnectionService.GetConnectionInfo("PD");
-      //if (ConnInfo == null) {
-      //  DbConnectionInfo dbInfo = new DbConnectionInfo("PD", "data source=DESKTOP-DELICI0;initial catalog=ARC01;user id=website;password=qQ#Qw5S!25byAuY3;Connection Timeout=15");
-      //  _dbConnectionService.AddUpdate("PD", dbInfo);
-      //}
-      //ConnInfo = _dbConnectionService.GetConnectionInfo("PD");
     }
-
+    #endregion
+    #region Tab Connections
     private void tabControlMain_SelectedIndexChanged(object sender, EventArgs e) {
       if (tabControlMain.SelectedIndex == 0) {
 
@@ -42,13 +43,7 @@ namespace DBWorkshop {
       if (tabControlMain.SelectedIndex == 1) {
         ReloadTvMain();
       }
-    }
-
-    public DbConnectionInfo? EditCon { get; set;}
-
-    private void MainForm_Shown(object sender, EventArgs e) {
-      
-    }
+    }     
 
     private bool _conModified = false;
     public bool ConnectionsModified { 
@@ -72,11 +67,14 @@ namespace DBWorkshop {
         }
       } catch { }
     }
-
     private void tbConName_ModifiedChanged(object sender, EventArgs e) {
       ConnectionsModified = true;
     }
+    private void btnSaveCon_Click(object sender, EventArgs e) {
 
+    }
+    #endregion
+    #region tvMain Tree view
     private void ReloadTvMain() {
       tvMain.Nodes.Clear();
       foreach (ConnectionStringSettings sx in ConfigurationManager.ConnectionStrings) {
@@ -186,11 +184,73 @@ namespace DBWorkshop {
         }        
       }
     }
-
-    private void tvMain_BeforeSelect(object sender, TreeViewCancelEventArgs e) {
-      
-    }
-
     
+
+    private void tvMain_AfterSelect(object sender, TreeViewEventArgs e) {
+      if ((e != null)&&(e.Node != null)) { 
+        tvMain_OnActiveSelectionChange(e.Node); 
+      }
+    }
+    public void tvMain_OnActiveSelectionChange(TreeNode focusNode) {
+      try {
+        Int32 iCurLevel = focusNode.Level;
+        switch (focusNode.ImageIndex) {
+          case 0: PrepareServer(focusNode); break;
+          case 1: PrepareDatabase(focusNode); break;
+          case 2: PrepareFolder(focusNode); break;
+          case 3: PrepareTable(focusNode); break;
+          case 4: PrepareView(focusNode); break;
+          case 5: PrepareProcedure(focusNode); break;
+          case 6: PrepareFunction(focusNode); break;
+        }
+      } catch (Exception ex) {
+        MessageBox.Show(ex.Message);
+      }
+    }
+    #endregion
+    #region Fill Text Boxes with code
+    public void PrepareServer(TreeNode tnServer) {
+      tbSQL.Text = "SQL Not Implemented Yet";
+      //edC.Text = "C# Not Implemented yet ";
+      //edSQLCursor.Text = "Not Implemented see Table or View item on tree.";
+      //edWiki.Text = "";
+    }
+    public void PrepareDatabase(TreeNode tnDatabase) {
+      tbSQL.Text = "SQL Not Implemented Yet";
+      //edC.Text = "C# Not Implemented yet ";
+      //edSQLCursor.Text = "Not Implemented see Table or View item on tree.";
+      //edWiki.Text = "";
+    }
+    public void PrepareFolder(TreeNode tnFolder) {
+      tbSQL.Text = "SQL Not Implemented Yet";
+      //edC.Text = "C# Not Implemented yet ";
+      //edSQLCursor.Text = "Not Implemented see Table or View item on tree.";
+      //edWiki.Text = "";
+    }
+    public void PrepareFunction(TreeNode tnFunction) {
+      tbSQL.Text = "SQL Not Implemented Yet";
+      //edC.Text = "C# Not Implemented yet ";
+      //edSQLCursor.Text = "Not Implemented see Table or View item on tree.";
+      //edWiki.Text = "";
+    }
+    public void PrepareTable(TreeNode tnTable) {
+      tbSQL.Text = tnTable.GenerateSQLAddUpdateStoredProc();
+      tbCSharp.Text = tnTable.GenerateCSharpRepoLikeClassFromTable();
+      //edSQLCursor.Text = "Not Implemented see Table or View item on tree.";
+      //edWiki.Text = "";
+    }
+    public void PrepareProcedure(TreeNode tnProcedure) {
+      tbSQL.Text = "SQL Not Implemented Yet";
+      //edC.Text = "C# Not Implemented yet ";
+      //edSQLCursor.Text = "Not Implemented see Table or View item on tree.";
+      //edWiki.Text = "";
+    }
+    public void PrepareView(TreeNode tnView) {
+      tbSQL.Text = "SQL Not Implemented Yet";
+      tbCSharp.Text = tnView.GenerateCSharpRepoLikeClassFromTable();
+      //edSQLCursor.Text = "Not Implemented see Table or View item on tree.";
+      //edWiki.Text = "";
+    }
+    #endregion
   }
 }

@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <PackageReference Include="Dapper" Version="2.0.123" />
+    <PackageReference Include="Dax-FCTB" Version="2.16.26.120" />
     <PackageReference Include="StaticExtensions" Version="2.0.1" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="7.0.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.5" />

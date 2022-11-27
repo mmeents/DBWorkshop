@@ -48,8 +48,10 @@
       this.tvMain = new System.Windows.Forms.TreeView();
       this.tabControl1 = new System.Windows.Forms.TabControl();
       this.tabSQL = new System.Windows.Forms.TabPage();
+      this.tbSQL = new FastColoredTextBoxNS.FastColoredTextBox();
       this.tabCSharp = new System.Windows.Forms.TabPage();
       this.tabWiki = new System.Windows.Forms.TabPage();
+      this.tbCSharp = new FastColoredTextBoxNS.FastColoredTextBox();
       this.tabControlMain.SuspendLayout();
       this.tabWelcome.SuspendLayout();
       this.tabBuildIt.SuspendLayout();
@@ -61,6 +63,10 @@
       this.splitContainer2.Panel2.SuspendLayout();
       this.splitContainer2.SuspendLayout();
       this.tabControl1.SuspendLayout();
+      this.tabSQL.SuspendLayout();
+      ((System.ComponentModel.ISupportInitialize)(this.tbSQL)).BeginInit();
+      this.tabCSharp.SuspendLayout();
+      ((System.ComponentModel.ISupportInitialize)(this.tbCSharp)).BeginInit();
       this.SuspendLayout();
       // 
       // ilMain
@@ -120,6 +126,8 @@
       this.btnSaveCon.TabIndex = 12;
       this.btnSaveCon.Text = "Save";
       this.btnSaveCon.UseVisualStyleBackColor = true;
+      this.btnSaveCon.Visible = false;
+      this.btnSaveCon.Click += new System.EventHandler(this.btnSaveCon_Click);
       // 
       // tbPassword
       // 
@@ -269,7 +277,7 @@
       // 
       this.splitContainer2.Panel2.Controls.Add(this.tabControl1);
       this.splitContainer2.Size = new System.Drawing.Size(790, 541);
-      this.splitContainer2.SplitterDistance = 382;
+      this.splitContainer2.SplitterDistance = 338;
       this.splitContainer2.TabIndex = 0;
       // 
       // panel1
@@ -277,7 +285,7 @@
       this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
       this.panel1.Location = new System.Drawing.Point(0, 0);
       this.panel1.Name = "panel1";
-      this.panel1.Size = new System.Drawing.Size(382, 25);
+      this.panel1.Size = new System.Drawing.Size(338, 25);
       this.panel1.TabIndex = 1;
       // 
       // tvMain
@@ -285,13 +293,16 @@
       this.tvMain.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+      this.tvMain.BorderStyle = System.Windows.Forms.BorderStyle.None;
       this.tvMain.ImageIndex = 0;
       this.tvMain.ImageList = this.ilMain;
-      this.tvMain.Location = new System.Drawing.Point(0, 24);
+      this.tvMain.Location = new System.Drawing.Point(0, 26);
       this.tvMain.Name = "tvMain";
       this.tvMain.SelectedImageIndex = 0;
-      this.tvMain.Size = new System.Drawing.Size(380, 517);
+      this.tvMain.Size = new System.Drawing.Size(336, 517);
       this.tvMain.TabIndex = 0;
+      this.tvMain.BeforeExpand += new System.Windows.Forms.TreeViewCancelEventHandler(this.tvMain_BeforeExpand);
+      this.tvMain.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.tvMain_AfterSelect);
       // 
       // tabControl1
       // 
@@ -302,24 +313,66 @@
       this.tabControl1.Location = new System.Drawing.Point(0, 0);
       this.tabControl1.Name = "tabControl1";
       this.tabControl1.SelectedIndex = 0;
-      this.tabControl1.Size = new System.Drawing.Size(404, 541);
+      this.tabControl1.Size = new System.Drawing.Size(448, 541);
       this.tabControl1.TabIndex = 0;
       // 
       // tabSQL
       // 
+      this.tabSQL.Controls.Add(this.tbSQL);
       this.tabSQL.Location = new System.Drawing.Point(4, 24);
       this.tabSQL.Name = "tabSQL";
       this.tabSQL.Padding = new System.Windows.Forms.Padding(3);
-      this.tabSQL.Size = new System.Drawing.Size(396, 513);
+      this.tabSQL.Size = new System.Drawing.Size(440, 513);
       this.tabSQL.TabIndex = 1;
       this.tabSQL.Text = "SQL";
       this.tabSQL.UseVisualStyleBackColor = true;
       // 
+      // tbSQL
+      // 
+      this.tbSQL.AutoCompleteBracketsList = new char[] {
+        '(',
+        ')',
+        '{',
+        '}',
+        '[',
+        ']',
+        '\"',
+        '\"',
+        '\'',
+        '\''};
+      this.tbSQL.AutoIndent = false;
+      this.tbSQL.AutoIndentCharsPatterns = "^\\s*[\\w\\.]+(\\s\\w+)?\\s*(?<range>=)\\s*(?<range>[^;=]+);\r\n^\\s*(case|default)\\s*[^:]*" +
+    "(?<range>:)\\s*(?<range>[^;]+);";
+      this.tbSQL.AutoScrollMinSize = new System.Drawing.Size(67, 14);
+      this.tbSQL.BackBrush = null;
+      this.tbSQL.CharHeight = 14;
+      this.tbSQL.CharWidth = 8;
+      this.tbSQL.DefaultMarkerSize = 8;
+      this.tbSQL.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
+      this.tbSQL.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.tbSQL.FindForm = null;
+      this.tbSQL.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+      this.tbSQL.GoToForm = null;
+      this.tbSQL.Hotkeys = resources.GetString("tbSQL.Hotkeys");
+      this.tbSQL.IsReplaceMode = false;
+      this.tbSQL.Language = FastColoredTextBoxNS.Text.Language.SQL;
+      this.tbSQL.Location = new System.Drawing.Point(3, 3);
+      this.tbSQL.Name = "tbSQL";
+      this.tbSQL.Paddings = new System.Windows.Forms.Padding(0);
+      this.tbSQL.ReplaceForm = null;
+      this.tbSQL.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(255)))));
+      this.tbSQL.ServiceColors = ((FastColoredTextBoxNS.ServiceColors)(resources.GetObject("tbSQL.ServiceColors")));
+      this.tbSQL.Size = new System.Drawing.Size(434, 507);
+      this.tbSQL.TabIndex = 0;
+      this.tbSQL.Text = "tbSQL";
+      this.tbSQL.Zoom = 100;
+      // 
       // tabCSharp
       // 
+      this.tabCSharp.Controls.Add(this.tbCSharp);
       this.tabCSharp.Location = new System.Drawing.Point(4, 24);
       this.tabCSharp.Name = "tabCSharp";
-      this.tabCSharp.Size = new System.Drawing.Size(396, 513);
+      this.tabCSharp.Size = new System.Drawing.Size(440, 513);
       this.tabCSharp.TabIndex = 2;
       this.tabCSharp.Text = "C#";
       this.tabCSharp.UseVisualStyleBackColor = true;
@@ -328,10 +381,50 @@
       // 
       this.tabWiki.Location = new System.Drawing.Point(4, 24);
       this.tabWiki.Name = "tabWiki";
-      this.tabWiki.Size = new System.Drawing.Size(396, 513);
+      this.tabWiki.Size = new System.Drawing.Size(440, 513);
       this.tabWiki.TabIndex = 3;
       this.tabWiki.Text = "Wiki";
       this.tabWiki.UseVisualStyleBackColor = true;
+      // 
+      // tbCSharp
+      // 
+      this.tbCSharp.AutoCompleteBracketsList = new char[] {
+        '(',
+        ')',
+        '{',
+        '}',
+        '[',
+        ']',
+        '\"',
+        '\"',
+        '\'',
+        '\''};
+      this.tbCSharp.AutoIndentCharsPatterns = "^\\s*[\\w\\.]+(\\s\\w+)?\\s*(?<range>=)\\s*(?<range>[^;=]+);\r\n^\\s*(case|default)\\s*[^:]*" +
+    "(?<range>:)\\s*(?<range>[^;]+);";
+      this.tbCSharp.AutoScrollMinSize = new System.Drawing.Size(179, 14);
+      this.tbCSharp.BackBrush = null;
+      this.tbCSharp.CharHeight = 14;
+      this.tbCSharp.CharWidth = 8;
+      this.tbCSharp.DefaultMarkerSize = 8;
+      this.tbCSharp.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
+      this.tbCSharp.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.tbCSharp.FindForm = null;
+      this.tbCSharp.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+      this.tbCSharp.GoToForm = null;
+      this.tbCSharp.Hotkeys = resources.GetString("tbCSharp.Hotkeys");
+      this.tbCSharp.IsReplaceMode = false;
+      this.tbCSharp.Language = FastColoredTextBoxNS.Text.Language.CSharp;
+      this.tbCSharp.Location = new System.Drawing.Point(0, 0);
+      this.tbCSharp.Name = "tbCSharp";
+      this.tbCSharp.Paddings = new System.Windows.Forms.Padding(0);
+      this.tbCSharp.ReplaceForm = null;
+      this.tbCSharp.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(255)))));
+      this.tbCSharp.SelectionLength = 19;
+      this.tbCSharp.ServiceColors = ((FastColoredTextBoxNS.ServiceColors)(resources.GetObject("tbCSharp.ServiceColors")));
+      this.tbCSharp.Size = new System.Drawing.Size(440, 513);
+      this.tbCSharp.TabIndex = 0;
+      this.tbCSharp.Text = "fastColoredTextBox1";
+      this.tbCSharp.Zoom = 100;
       // 
       // MainForm
       // 
@@ -354,6 +447,10 @@
       ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
       this.splitContainer2.ResumeLayout(false);
       this.tabControl1.ResumeLayout(false);
+      this.tabSQL.ResumeLayout(false);
+      ((System.ComponentModel.ISupportInitialize)(this.tbSQL)).EndInit();
+      this.tabCSharp.ResumeLayout(false);
+      ((System.ComponentModel.ISupportInitialize)(this.tbCSharp)).EndInit();
       this.ResumeLayout(false);
 
     }
@@ -384,5 +481,7 @@
     private TextBox tbConName;
     private ListBox listBox1;
     private Label label1;
+    private FastColoredTextBoxNS.FastColoredTextBox tbSQL;
+    private FastColoredTextBoxNS.FastColoredTextBox tbCSharp;
   }
 }
