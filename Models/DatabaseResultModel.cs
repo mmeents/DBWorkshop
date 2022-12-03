@@ -8,4 +8,8 @@ namespace DBWorkshop.Models {
   public class DatabaseResultModel {
     public string Db { get; set;} = "";
   }
+
+  public class DatabaseTextResultModel { 
+    public string Text { get; set;} = "";
+  }
 }

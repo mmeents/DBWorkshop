@@ -18,12 +18,7 @@ namespace DBWorkshop {
       else if (ObjectType == "Function") { sResult = 6; }
       return sResult;
     }
-    public static string AsUpperCaseFirstLetter(this string content) {
-      return content.Substring(0, 1).ToUpper() + content.Substring(1);
-    }
-    public static string AsLowerCaseFirstLetter(this string content) {
-      return content.Substring(0, 1).ToLower() + content.Substring(1);
-    }
+
   }
 
   public static class CodeStatic {
@@ -121,7 +116,7 @@ namespace DBWorkshop {
       string sInsertListAsSQlParams = tnTable.GetSQLInsertListAsSQLParam();
       string sColList = tnTable.GetSQLColumnList(false);
       string sAssignColSQL = GetAssignChildSQLColList(tnTable);
-      string sFirstCol = "";
+      string sFirstCol;
       string sKeyType = "", sKey = "";
       if (tnTable.Nodes.Count > 0) {
         sFirstCol = tnTable.Nodes[0].Text.ToLower();
@@ -189,7 +184,7 @@ namespace DBWorkshop {
       string nl = Environment.NewLine;
       foreach (TreeNode tn in cn.Nodes) {
         string scol = tn.Text.ParseFirst(" ");
-        scol = scol.Substring(0, 1).ToUpper() + scol.Substring(1);
+        scol = scol[..1].ToUpper() + scol[1..];
         sRes = sRes + $"    public {GetCTypeFromSQLType(tn.Text.ParseLast(" "))} {scol}" + "{get; set;} = " + SQLDefNullValue(tn.Text.ParseLast(" ")) + nl;
       }
       return sRes;
@@ -203,21 +198,20 @@ namespace DBWorkshop {
       string sFirstCol;
       string sKeyType = "", sKey = "";
       if (cn.Nodes.Count > 0) {
-        sFirstCol = cn.Nodes[0].Text.ToLower();
-        sKey = sFirstCol.ParseString(" ()", 0);
-        sKey = sKey.Substring(0, 1).ToLower() + sKey.Substring(1, sKey.Length - 1);
-        sKeyType = GetCTypeFromSQLType(sFirstCol.ParseLast(" "));
+        sFirstCol = cn.Nodes[0].Text;
+        sKey = sFirstCol.ParseString(" ()", 0).AsLowerCaseFirstLetter();        
+        sKeyType = GetCTypeFromSQLType(sFirstCol.ParseLast(" ").ToLower());
       }      
       string className = tblName.ParseLast(".").AsUpperCaseFirstLetter();
       string classVarName = className.AsLowerCaseFirstLetter();
       return
         "using Dapper;  // data io is based on Dapper." + nl +
-       $"namespace {sDB}"+"{" + nl +
+        "using StaticExtensions;  // see StaticExtensions in nuget." + nl + nl +
+       $"namespace {sDB}"+"{" + nl + nl +
         "  // C Entity Class " + nl +
        $"  public class {className}" + "{" + nl +
        $"    public {tblName.ParseLast(".")}()" + "{}" + nl +
                cn.GetCSharpColAsProps() +
-        "    public string AsJson() { return JsonConvert.SerializeObject(this); }" + nl +
         "  }" + nl + nl +
        $"  public class {className}Repository" + "{" + nl +
        $"    // C Dapper Load List of {className}" + nl +
@@ -263,5 +257,7 @@ namespace DBWorkshop {
      
      
     }
+
+
   }
 }

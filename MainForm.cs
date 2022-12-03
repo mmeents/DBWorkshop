@@ -7,7 +7,6 @@ using System.Data;
 using System.Data.SqlClient;
 using DBWorkshop.Models;
 
-
 namespace DBWorkshop {
   public partial class MainForm : Form {
     #region Form Vars and startup
@@ -37,14 +36,11 @@ namespace DBWorkshop {
     #endregion
     #region Tab Connections
     private void tabControlMain_SelectedIndexChanged(object sender, EventArgs e) {
-      if (tabControlMain.SelectedIndex == 0) {
-
-      }
+      if (tabControlMain.SelectedIndex == 0) {  }
       if (tabControlMain.SelectedIndex == 1) {
         ReloadTvMain();
       }
-    }     
-
+    }
     private bool _conModified = false;
     public bool ConnectionsModified { 
       get { return _conModified; }
@@ -84,15 +80,14 @@ namespace DBWorkshop {
     }
 
     private bool isExpanding = false; 
-    private async void tvMain_BeforeExpand(object sender, TreeViewCancelEventArgs e) {
+    private async void TvMain_BeforeExpand(object sender, TreeViewCancelEventArgs e) {
       if (!isExpanding) { 
-        TreeNode? thisNode = e.Node;
-        if (thisNode != null) {
+        if (e.Node != null) {
           tvMain.BeginUpdate();
-          switch (thisNode.Level) {
+          switch (e.Node.Level) {
             case 0:   // server Level      
               e.Node.Nodes.Clear();
-              DbConnectionInfo aDBI1 = ((DBConNode)thisNode)._dBConnection; 
+              DbConnectionInfo aDBI1 = ((DBConNode)e.Node)._dBConnection; 
               try {
                 IEnumerable<DatabaseResultModel> databases;
                 using (SqlConnection connection = new SqlConnection(aDBI1.ConnectionString)) {
@@ -110,15 +105,14 @@ namespace DBWorkshop {
                   e.Node.Expand();
                   isExpanding = false;
                  }
-              } catch (Exception ex) {
+              } catch {
     
               }
               break;
             case 1:  // database Level
-              var dbName = e.Node.Parent.Text.ParseString(":", 0);
               string sdb = e.Node.Text; 
               e.Node.Nodes.Clear();
-              DbConnectionInfo aDBCI = ((DBConNode)thisNode.Parent)._dBConnection;              
+              DbConnectionInfo aDBCI = ((DBConNode)e.Node.Parent)._dBConnection;              
               try {  // ObjType, tbl, col, ColType, ColLen
                 IEnumerable<DBObjectsResultModel> dBObjects;
                 using (SqlConnection connection = new SqlConnection(aDBCI.ConnectionString)) {
@@ -142,11 +136,11 @@ namespace DBWorkshop {
                   + "   and (so.Name not like ('sys%')) and (st.Name is not null)  "
                   + " order by so.xtype, so.name, sc.ColOrder  ");
                 }
-                TreeNode ObjTypeNode = null, ObjItemNode = null;
+                TreeNode? ObjTypeNode = null, ObjItemNode = null;
                 string sLastObjType = "";
                 string sLastItem = "";
                 foreach (DBObjectsResultModel dr in dBObjects) {                  
-                  string sItemName = Convert.ToString(dr.ObjectName);
+                  string sItemName = dr.ObjectName;
                   if ((dr.ObjectType == "Procedure") || (dr.ObjectType == "Table") || (dr.ObjectType == "View") || (dr.ObjectType == "Function")) {
                     if (sLastObjType != dr.ObjectType) {
                       ObjTypeNode = new TreeNode(dr.ObjectType+"s", 2, 2);
@@ -188,10 +182,10 @@ namespace DBWorkshop {
 
     private void tvMain_AfterSelect(object sender, TreeViewEventArgs e) {
       if ((e != null)&&(e.Node != null)) { 
-        tvMain_OnActiveSelectionChange(e.Node); 
+        tvMain_OnActiveSelectionChangeAsync(e.Node); 
       }
     }
-    public void tvMain_OnActiveSelectionChange(TreeNode focusNode) {
+    public void tvMain_OnActiveSelectionChangeAsync(TreeNode focusNode) {
       try {
         Int32 iCurLevel = focusNode.Level;
         switch (focusNode.ImageIndex) {
@@ -201,7 +195,7 @@ namespace DBWorkshop {
           case 3: PrepareTable(focusNode); break;
           case 4: PrepareView(focusNode); break;
           case 5: PrepareProcedure(focusNode); break;
-          case 6: PrepareFunction(focusNode); break;
+          case 6: PrepareFunctionAsync(focusNode); break;
         }
       } catch (Exception ex) {
         MessageBox.Show(ex.Message);
@@ -223,13 +217,13 @@ namespace DBWorkshop {
     }
     public void PrepareFolder(TreeNode tnFolder) {
       tbSQL.Text = "SQL Not Implemented Yet";
-      //edC.Text = "C# Not Implemented yet ";
+      tbCSharp.Text = "C# Not Implemented yet ";
       //edSQLCursor.Text = "Not Implemented see Table or View item on tree.";
       //edWiki.Text = "";
     }
-    public void PrepareFunction(TreeNode tnFunction) {
-      tbSQL.Text = "SQL Not Implemented Yet";
-      //edC.Text = "C# Not Implemented yet ";
+    public async void PrepareFunctionAsync(TreeNode tnFunction) {
+      tbSQL.Text = await GetHelpTextAsync(tnFunction);
+      tbCSharp.Text = "C# Not Implemented yet ";
       //edSQLCursor.Text = "Not Implemented see Table or View item on tree.";
       //edWiki.Text = "";
     }
@@ -239,9 +233,9 @@ namespace DBWorkshop {
       //edSQLCursor.Text = "Not Implemented see Table or View item on tree.";
       //edWiki.Text = "";
     }
-    public void PrepareProcedure(TreeNode tnProcedure) {
-      tbSQL.Text = "SQL Not Implemented Yet";
-      //edC.Text = "C# Not Implemented yet ";
+    public async void PrepareProcedure(TreeNode tnProcedure) {
+      tbSQL.Text = await GetHelpTextAsync(tnProcedure);
+      tbCSharp.Text = "C# Not Implemented yet ";
       //edSQLCursor.Text = "Not Implemented see Table or View item on tree.";
       //edWiki.Text = "";
     }
@@ -250,6 +244,31 @@ namespace DBWorkshop {
       tbCSharp.Text = tnView.GenerateCSharpRepoLikeClassFromTable();
       //edSQLCursor.Text = "Not Implemented see Table or View item on tree.";
       //edWiki.Text = "";
+    }
+    #endregion
+    #region Database Code Gen functions
+    public async Task<string> GetHelpTextAsync(TreeNode cn) { // expecting a Function or Procedure as cn. 
+      string ObjName = cn.Text.ParseFirst(" ");
+      string sDBName = cn.Parent.Parent.Text.ParseString(":", 0);      
+      DbConnectionInfo? dbci = ((DBConNode)cn.Parent.Parent.Parent)._dBConnection;      
+      string sResult = "";      
+      if (dbci != null) {        
+        try {          
+          IEnumerable<DatabaseTextResultModel> result;          
+          using (SqlConnection connection = new SqlConnection(dbci.ConnectionString)) {
+              result = await connection.QueryAsync<DatabaseTextResultModel>(sDBName + ".sys.sp_helptext", new { ObjName }, commandType: CommandType.StoredProcedure);
+           }         
+          if (result.Any()) {
+            foreach (DatabaseTextResultModel dr in result) {
+              sResult += dr.Text;
+            }
+          }
+        } catch (Exception e) {
+          sResult = $"Error Database:{sDBName}  ObjName:{ObjName} while accessing sp_HelpText, " + e.Message;
+        }
+      }
+      return sResult;
+      
     }
     #endregion
   }
