@@ -15,6 +15,7 @@
     <RepositoryUrl>https://github.com/mmeents/DBWorkshop</RepositoryUrl>
     <PackageTags>Database Code Generating App</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Company>Sky High Productions, LLC</Company>
   </PropertyGroup>
 
   <ItemGroup>
