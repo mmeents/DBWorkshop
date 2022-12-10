@@ -22,6 +22,7 @@ namespace DBWorkshop {
   }
 
   public static class CodeStatic {
+    public static string nl { get { return Environment.NewLine; } }
     public static string SQLDefNullValue(string sqlType) {
       string w = sqlType.ToLower().ParseString(" ()", 0);
       string result = "";
@@ -62,11 +63,14 @@ namespace DBWorkshop {
       }
       return sRes;
     }
-    public static string GetSQLInsertListAsSQLParam(this TreeNode tnTable) {
+    public static string GetSQLInsertListAsSQLParam(this TreeNode tnTable, bool IncludeFirstCol = false) {
       string sRes = ""; string sFTT = "true";
       foreach (TreeNode tn in tnTable.Nodes) {
         if (sFTT == "true") {
           sFTT = "false";
+          if (IncludeFirstCol) {
+            sRes = "@" + tn.Text.ParseString(" ()", 0);
+          }
         } else {
           if (sRes == "") {
             sRes = "@" + tn.Text.ParseString(" ()", 0);
@@ -219,7 +223,8 @@ namespace DBWorkshop {
        $"      IEnumerable<{className}> result;" + nl +
         "      string connectionString = Settings.GetConnectionString(\"PD\");" + nl +
         "      using (SqlConnection connection = new SqlConnection(connectionString)) {" + nl +
-       $"        result = await connection.QueryAsync<{className}>(\"select {sColListb} from {tblName} \");" + nl +
+       $"        result = await connection.QueryAsync<{className}>("+nl+
+       $"          \"select {sColListb} from {tblName} \");" + nl +
         "      }" + nl +
         "      return Ok(result);" + nl +
         "    }" + nl + nl +
@@ -229,7 +234,8 @@ namespace DBWorkshop {
        $"      {className} result;" + nl +
         "      using (SqlConnection connection = new SqlConnection(connectionString)) {" + nl +
         "        var param = new {" + sKey + "};" + nl +
-       $"        result = await connection.QueryFirstOrDefaultAsync<{className}>(\"select {sColListb} from {tblName} where {sKey} = @{sKey} \", param);" + nl +
+       $"        result = await connection.QueryFirstOrDefaultAsync<{className}>("+nl+
+       $"          \"select {sColListb} from {tblName} where {sKey} = @{sKey} \", param);" + nl +
         "      }" + nl +
         "      return Ok($\"{result.AsJson()}\");" + nl +
         "    }" + nl + nl +
@@ -238,7 +244,8 @@ namespace DBWorkshop {
         "      string connectionString = Settings.GetConnectionString(\"PD\");" + nl +
        $"      {className} result;" + nl +
         "      using (SqlConnection connection = new SqlConnection(connectionString)) {" + nl +
-       $"        result = await connection.QueryFirstOrDefaultAsync<{className}>(\"dbo.sp_AddUpdate{className}\", {classVarName}, commandType: CommandType.StoredProcedure);" + nl +
+       $"        result = await connection.QueryFirstOrDefaultAsync<{className}>("+nl+
+       $"          \"dbo.sp_AddUpdate{className}\", {classVarName}, commandType: CommandType.StoredProcedure);" + nl +
         "      }" + nl +
         "      return Ok(result.AsJson());" + nl +
         "    }" + nl + nl +
@@ -248,7 +255,8 @@ namespace DBWorkshop {
         "      string connectionString = Settings.GetConnectionString(\"PD\");" + nl +
         "      var param = new {" + $"{sKey}" + "};" + nl +
         "      using (SqlConnection connection = new SqlConnection(connectionString)) {" + nl +
-        "        result = await connection.ExecuteAsync(\"delete from " + $"[{className}] where [{sKey}] = @{sKey} " + "\", param);" + nl +
+        "        result = await connection.ExecuteAsync("+nl+
+        "          \"delete from " + $"[{className}] where [{sKey}] = @{sKey} " + "\", param);" + nl +
         "      }" + nl +
         "      return Ok(result == 1);" + nl +
         "    }" + nl +
@@ -258,6 +266,36 @@ namespace DBWorkshop {
      
     }
 
+    public static string GenerateCSharpExecStoredProc(this TreeNode tnStProc) {      
+      string sDBName = tnStProc.Parent.Parent.Parent.Text.ParseFirst(":");
+      string a = "";
+      string c = "";
+      for (Int32 i = 0; i < tnStProc.Nodes.Count; i++) {
+        if (a == "") {
+          a = tnStProc.Nodes[i].Text.ParseString(" @", 0).AsLowerCaseFirstLetter();
+        } else {
+          a = a + ", " + tnStProc.Nodes[i].Text.ParseString(" @", 0).AsLowerCaseFirstLetter();
+        }
+        c = c + nl + $"      {GetCTypeFromSQLType(tnStProc.Nodes[i].Text.ParseLast(" "))} {tnStProc.Nodes[i].Text.ParseFirst(" @").AsLowerCaseFirstLetter()} = {SQLDefNullValue(tnStProc.Nodes[i].Text.ParseLast(" "))};";
+      }
+      string className = tnStProc.Text.ParseLast(".").AsUpperCaseFirstLetter();
+      var s = "    // C Dapper Edit via Add Update stored procdure" + nl +
+        $"    public async Task<ActionResult> Exec{className}Async() " + "{" + nl +
+        $"      string connectionString = Settings.GetConnectionString(\"{sDBName}\");" + nl +
+        $"      {className}Result result;" +  
+                c + nl +
+         "      var params = new {" + $"{a}" + "};" + nl +
+         "      using (SqlConnection connection = new SqlConnection(connectionString)) {" + nl +
+        $"        result = await connection.QueryAsync<{className}Result>(\"{tnStProc.Text.ParseFirst(" ")}\", params, commandType: CommandType.StoredProcedure);" + nl +
+         "      }" + nl +
+         "      return Ok(result.ToJson());" + nl +
+         "    }" + nl + nl;
+      return s;
+    }
+    public static string GetExecSQLStoredProcedure(this TreeNode tnStProc) { 
+      return "--  the call to execute " + nl 
+        +$"Exec {tnStProc.Text} {tnStProc.GetSQLInsertListAsSQLParam(true)}";
+    }
 
   }
 }

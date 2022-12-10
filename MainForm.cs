@@ -21,10 +21,12 @@ namespace DBWorkshop {
       _dbConnectionService = new DBConnectionService(_appKey, _conFileName);
       SetupMainWelcomeTab();     
     }
-    private void MainForm_Shown(object sender, EventArgs e) { }
+    private void MainForm_Shown(object sender, EventArgs e) {
+            
+    }
     private void SetupMainWelcomeTab() {
       if (_dbConnectionService.GetConnectionCountOnFile() == 0) {
-        tabBuildIt.Hide();
+        if (tabBuildIt.Visible  ) { tabBuildIt.Visible = false; }
       } else {
         listBox1.Items.Clear();
         var cons = _dbConnectionService.GetConnectionNames();
@@ -36,8 +38,11 @@ namespace DBWorkshop {
     #endregion
     #region Tab Connections
     private void tabControlMain_SelectedIndexChanged(object sender, EventArgs e) {
-      if (tabControlMain.SelectedIndex == 0) {  }
+      if (tabControlMain.SelectedIndex == 0) { 
+         this.Text = "DBWorkshop  -  Set Connection Strings";
+      }
       if (tabControlMain.SelectedIndex == 1) {
+        this.Text = "DBWorkshop  -  Generate Code";
         ReloadTvMain();
       }
     }
@@ -46,7 +51,14 @@ namespace DBWorkshop {
       get { return _conModified; }
       set { 
          _conModified = value;
-         if (!btnSaveCon.Visible) btnSaveCon.Visible = _conModified;         
+         if (btnSaveCon.Visible != _conModified ) { 
+          btnSaveCon.Visible = _conModified; 
+         }
+         if (listBox1.SelectedItem is not null) { 
+            btnRemoveConnection.Visible = true;
+         } else { 
+            btnRemoveConnection.Visible = false;
+         }
       } 
     } 
     private void listBox1_SelectedIndexChanged(object sender, EventArgs e) {
@@ -54,11 +66,11 @@ namespace DBWorkshop {
         var val = listBox1.SelectedItem.AsString();
         EditCon = _dbConnectionService.GetConnectionInfo(val);
         if (EditCon != null) {
-           tbConName.Text = EditCon.ConnectionName;
-           tbServer.Text = EditCon.ServerName;
-           tbDatabase.Text = EditCon.InitialCatalog;
-           tbUserName.Text = EditCon.UserName;
-           tbPassword.Text = EditCon.Password;
+           edConName.Text = EditCon.ConnectionName;
+           edServer.Text = EditCon.ServerName;
+           edDatabase.Text = EditCon.InitialCatalog;
+           edUserName.Text = EditCon.UserName;
+           edPassword.Text = EditCon.Password;
            ConnectionsModified = false;
         }
       } catch { }
@@ -67,6 +79,17 @@ namespace DBWorkshop {
       ConnectionsModified = true;
     }
     private void btnSaveCon_Click(object sender, EventArgs e) {
+      string connectionName = listBox1.SelectedItem?.ToString()??"default";
+      DbConnectionInfo ci = new() {
+        ConnectionName = edConName.Text,
+        ServerName = edServer.Text, 
+        InitialCatalog = edDatabase.Text,
+        UserName = edUserName.Text,
+        Password = edPassword.Text
+      };
+
+      _dbConnectionService.AddUpdate(connectionName, ci);
+      ConnectionsModified = false;
 
     }
     #endregion
@@ -80,6 +103,10 @@ namespace DBWorkshop {
     }
 
     private bool isExpanding = false; 
+
+    private void WriteError(string message) {
+      edError.Text =  message  + Environment.NewLine + edError.Text ;
+    }
     private async void TvMain_BeforeExpand(object sender, TreeViewCancelEventArgs e) {
       if (!isExpanding) { 
         if (e.Node != null) {
@@ -105,8 +132,8 @@ namespace DBWorkshop {
                   e.Node.Expand();
                   isExpanding = false;
                  }
-              } catch {
-    
+              } catch (Exception ex) {
+                WriteError(ex.Message);    
               }
               break;
             case 1:  // database Level
@@ -170,7 +197,7 @@ namespace DBWorkshop {
                   isExpanding = false;
                 }
               } catch (Exception ee) {
-                MessageBox.Show(this.Owner, ee.Message, "dbWorkshop Error");
+                WriteError(ee.Message);
               }
               break;
           }
@@ -198,7 +225,7 @@ namespace DBWorkshop {
           case 6: PrepareFunctionAsync(focusNode); break;
         }
       } catch (Exception ex) {
-        MessageBox.Show(ex.Message);
+        WriteError(ex.Message);
       }
     }
     #endregion
@@ -216,8 +243,24 @@ namespace DBWorkshop {
       //edWiki.Text = "";
     }
     public void PrepareFolder(TreeNode tnFolder) {
+      string s = "";
+      string c = "";
+      int ii = 0;
+      foreach(TreeNode tnNode in tnFolder.Nodes) {
+        ii = tnNode.ImageIndex;
+        switch (ii) {
+          case 3: c += tnNode.GenerateCSharpRepoLikeClassFromTable(); break;
+          case 4: c += tnNode.GenerateCSharpRepoLikeClassFromTable(); break;
+          case 5: c += tnNode.GenerateCSharpExecStoredProc(); break;
+          case 6:  break;
+        }
+      }
+
       tbSQL.Text = "SQL Not Implemented Yet";
-      tbCSharp.Text = "C# Not Implemented yet ";
+      if (ii == 3 || ii == 4 || ii == 5 ) {
+        tbCSharp.Text = "  class SomeRepo {" +CodeStatic.nl+ c +"  }";
+      } else 
+        tbCSharp.Text = "C# Not Implemented yet ";
       //edSQLCursor.Text = "Not Implemented see Table or View item on tree.";
       //edWiki.Text = "";
     }
@@ -234,11 +277,12 @@ namespace DBWorkshop {
       //edWiki.Text = "";
     }
     public async void PrepareProcedure(TreeNode tnProcedure) {
-      tbSQL.Text = await GetHelpTextAsync(tnProcedure);
-      tbCSharp.Text = "C# Not Implemented yet ";
-      //edSQLCursor.Text = "Not Implemented see Table or View item on tree.";
-      //edWiki.Text = "";
-    }
+      tbSQL.Text = await GetHelpTextAsync(tnProcedure) + CodeStatic.nl + CodeStatic.nl +
+        tnProcedure.GetExecSQLStoredProcedure();
+      tbCSharp.Text = tnProcedure.GenerateCSharpExecStoredProc(); 
+        //edSQLCursor.Text = "Not Implemented see Table or View item on tree.";
+        //edWiki.Text = "";
+      }
     public void PrepareView(TreeNode tnView) {
       tbSQL.Text = "SQL Not Implemented Yet";
       tbCSharp.Text = tnView.GenerateCSharpRepoLikeClassFromTable();
@@ -264,12 +308,19 @@ namespace DBWorkshop {
             }
           }
         } catch (Exception e) {
-          sResult = $"Error Database:{sDBName}  ObjName:{ObjName} while accessing sp_HelpText, " + e.Message;
+          WriteError($"Error Database:{sDBName}  ObjName:{ObjName} while accessing sp_HelpText, " + e.Message);
         }
       }
       return sResult;
       
     }
     #endregion
+
+    private void btnRemoveConnection_Click(object sender, EventArgs e) {
+      string connName = listBox1.SelectedItem?.ToString()??"default";
+      if (connName != "default") { 
+        _dbConnectionService.RemoveConnection(connName);        
+      }
+    }
   }
 }

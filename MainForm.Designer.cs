@@ -28,17 +28,18 @@
       this.ilMain = new System.Windows.Forms.ImageList(this.components);
       this.tabControlMain = new System.Windows.Forms.TabControl();
       this.tabWelcome = new System.Windows.Forms.TabPage();
+      this.btnRemoveConnection = new System.Windows.Forms.Button();
       this.btnSaveCon = new System.Windows.Forms.Button();
-      this.tbPassword = new System.Windows.Forms.TextBox();
-      this.tbUserName = new System.Windows.Forms.TextBox();
-      this.tbDatabase = new System.Windows.Forms.TextBox();
-      this.tbServer = new System.Windows.Forms.TextBox();
+      this.edPassword = new System.Windows.Forms.TextBox();
+      this.edUserName = new System.Windows.Forms.TextBox();
+      this.edDatabase = new System.Windows.Forms.TextBox();
+      this.edServer = new System.Windows.Forms.TextBox();
       this.label6 = new System.Windows.Forms.Label();
       this.label5 = new System.Windows.Forms.Label();
       this.label4 = new System.Windows.Forms.Label();
       this.label3 = new System.Windows.Forms.Label();
       this.label2 = new System.Windows.Forms.Label();
-      this.tbConName = new System.Windows.Forms.TextBox();
+      this.edConName = new System.Windows.Forms.TextBox();
       this.listBox1 = new System.Windows.Forms.ListBox();
       this.label1 = new System.Windows.Forms.Label();
       this.tabBuildIt = new System.Windows.Forms.TabPage();
@@ -46,26 +47,29 @@
       this.splitContainer2 = new System.Windows.Forms.SplitContainer();
       this.panel1 = new System.Windows.Forms.Panel();
       this.tvMain = new System.Windows.Forms.TreeView();
-      this.tabControl1 = new System.Windows.Forms.TabControl();
+      this.tabControlTextEditors = new System.Windows.Forms.TabControl();
       this.tabSQL = new System.Windows.Forms.TabPage();
       this.tbSQL = new FastColoredTextBoxNS.FastColoredTextBox();
       this.tabCSharp = new System.Windows.Forms.TabPage();
       this.tbCSharp = new FastColoredTextBoxNS.FastColoredTextBox();
+      this.edError = new FastColoredTextBoxNS.FastColoredTextBox();
       this.tabControlMain.SuspendLayout();
       this.tabWelcome.SuspendLayout();
       this.tabBuildIt.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
       this.splitContainer1.Panel1.SuspendLayout();
+      this.splitContainer1.Panel2.SuspendLayout();
       this.splitContainer1.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
       this.splitContainer2.Panel1.SuspendLayout();
       this.splitContainer2.Panel2.SuspendLayout();
       this.splitContainer2.SuspendLayout();
-      this.tabControl1.SuspendLayout();
+      this.tabControlTextEditors.SuspendLayout();
       this.tabSQL.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)(this.tbSQL)).BeginInit();
       this.tabCSharp.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)(this.tbCSharp)).BeginInit();
+      ((System.ComponentModel.ISupportInitialize)(this.edError)).BeginInit();
       this.SuspendLayout();
       // 
       // ilMain
@@ -90,33 +94,46 @@
       this.tabControlMain.Location = new System.Drawing.Point(0, 0);
       this.tabControlMain.Name = "tabControlMain";
       this.tabControlMain.SelectedIndex = 0;
-      this.tabControlMain.Size = new System.Drawing.Size(804, 456);
+      this.tabControlMain.Size = new System.Drawing.Size(804, 553);
       this.tabControlMain.TabIndex = 1;
       this.tabControlMain.SelectedIndexChanged += new System.EventHandler(this.tabControlMain_SelectedIndexChanged);
       // 
       // tabWelcome
       // 
       this.tabWelcome.BackColor = System.Drawing.Color.Gray;
+      this.tabWelcome.Controls.Add(this.btnRemoveConnection);
       this.tabWelcome.Controls.Add(this.btnSaveCon);
-      this.tabWelcome.Controls.Add(this.tbPassword);
-      this.tabWelcome.Controls.Add(this.tbUserName);
-      this.tabWelcome.Controls.Add(this.tbDatabase);
-      this.tabWelcome.Controls.Add(this.tbServer);
+      this.tabWelcome.Controls.Add(this.edPassword);
+      this.tabWelcome.Controls.Add(this.edUserName);
+      this.tabWelcome.Controls.Add(this.edDatabase);
+      this.tabWelcome.Controls.Add(this.edServer);
       this.tabWelcome.Controls.Add(this.label6);
       this.tabWelcome.Controls.Add(this.label5);
       this.tabWelcome.Controls.Add(this.label4);
       this.tabWelcome.Controls.Add(this.label3);
       this.tabWelcome.Controls.Add(this.label2);
-      this.tabWelcome.Controls.Add(this.tbConName);
+      this.tabWelcome.Controls.Add(this.edConName);
       this.tabWelcome.Controls.Add(this.listBox1);
       this.tabWelcome.Controls.Add(this.label1);
       this.tabWelcome.ForeColor = System.Drawing.Color.White;
       this.tabWelcome.Location = new System.Drawing.Point(4, 24);
       this.tabWelcome.Margin = new System.Windows.Forms.Padding(0);
       this.tabWelcome.Name = "tabWelcome";
-      this.tabWelcome.Size = new System.Drawing.Size(796, 428);
+      this.tabWelcome.Size = new System.Drawing.Size(796, 525);
       this.tabWelcome.TabIndex = 0;
       this.tabWelcome.Text = "Welcome";
+      // 
+      // btnRemoveConnection
+      // 
+      this.btnRemoveConnection.ForeColor = System.Drawing.Color.Red;
+      this.btnRemoveConnection.Location = new System.Drawing.Point(61, 255);
+      this.btnRemoveConnection.Name = "btnRemoveConnection";
+      this.btnRemoveConnection.Size = new System.Drawing.Size(54, 23);
+      this.btnRemoveConnection.TabIndex = 13;
+      this.btnRemoveConnection.Text = "Remove";
+      this.btnRemoveConnection.UseVisualStyleBackColor = true;
+      this.btnRemoveConnection.Visible = false;
+      this.btnRemoveConnection.Click += new System.EventHandler(this.btnRemoveConnection_Click);
       // 
       // btnSaveCon
       // 
@@ -130,37 +147,37 @@
       this.btnSaveCon.Visible = false;
       this.btnSaveCon.Click += new System.EventHandler(this.btnSaveCon_Click);
       // 
-      // tbPassword
+      // edPassword
       // 
-      this.tbPassword.Location = new System.Drawing.Point(389, 195);
-      this.tbPassword.Name = "tbPassword";
-      this.tbPassword.Size = new System.Drawing.Size(261, 23);
-      this.tbPassword.TabIndex = 11;
-      this.tbPassword.ModifiedChanged += new System.EventHandler(this.tbConName_ModifiedChanged);
+      this.edPassword.Location = new System.Drawing.Point(389, 195);
+      this.edPassword.Name = "edPassword";
+      this.edPassword.Size = new System.Drawing.Size(261, 23);
+      this.edPassword.TabIndex = 11;
+      this.edPassword.ModifiedChanged += new System.EventHandler(this.tbConName_ModifiedChanged);
       // 
-      // tbUserName
+      // edUserName
       // 
-      this.tbUserName.Location = new System.Drawing.Point(389, 167);
-      this.tbUserName.Name = "tbUserName";
-      this.tbUserName.Size = new System.Drawing.Size(261, 23);
-      this.tbUserName.TabIndex = 10;
-      this.tbUserName.ModifiedChanged += new System.EventHandler(this.tbConName_ModifiedChanged);
+      this.edUserName.Location = new System.Drawing.Point(389, 167);
+      this.edUserName.Name = "edUserName";
+      this.edUserName.Size = new System.Drawing.Size(261, 23);
+      this.edUserName.TabIndex = 10;
+      this.edUserName.ModifiedChanged += new System.EventHandler(this.tbConName_ModifiedChanged);
       // 
-      // tbDatabase
+      // edDatabase
       // 
-      this.tbDatabase.Location = new System.Drawing.Point(389, 140);
-      this.tbDatabase.Name = "tbDatabase";
-      this.tbDatabase.Size = new System.Drawing.Size(261, 23);
-      this.tbDatabase.TabIndex = 9;
-      this.tbDatabase.ModifiedChanged += new System.EventHandler(this.tbConName_ModifiedChanged);
+      this.edDatabase.Location = new System.Drawing.Point(389, 140);
+      this.edDatabase.Name = "edDatabase";
+      this.edDatabase.Size = new System.Drawing.Size(261, 23);
+      this.edDatabase.TabIndex = 9;
+      this.edDatabase.ModifiedChanged += new System.EventHandler(this.tbConName_ModifiedChanged);
       // 
-      // tbServer
+      // edServer
       // 
-      this.tbServer.Location = new System.Drawing.Point(389, 112);
-      this.tbServer.Name = "tbServer";
-      this.tbServer.Size = new System.Drawing.Size(261, 23);
-      this.tbServer.TabIndex = 8;
-      this.tbServer.ModifiedChanged += new System.EventHandler(this.tbConName_ModifiedChanged);
+      this.edServer.Location = new System.Drawing.Point(389, 112);
+      this.edServer.Name = "edServer";
+      this.edServer.Size = new System.Drawing.Size(261, 23);
+      this.edServer.TabIndex = 8;
+      this.edServer.ModifiedChanged += new System.EventHandler(this.tbConName_ModifiedChanged);
       // 
       // label6
       // 
@@ -207,21 +224,19 @@
       this.label2.TabIndex = 3;
       this.label2.Text = "Connection Name ";
       // 
-      // tbConName
+      // edConName
       // 
-      this.tbConName.Location = new System.Drawing.Point(389, 84);
-      this.tbConName.Name = "tbConName";
-      this.tbConName.Size = new System.Drawing.Size(261, 23);
-      this.tbConName.TabIndex = 2;
-      this.tbConName.ModifiedChanged += new System.EventHandler(this.tbConName_ModifiedChanged);
+      this.edConName.Location = new System.Drawing.Point(389, 84);
+      this.edConName.Name = "edConName";
+      this.edConName.Size = new System.Drawing.Size(261, 23);
+      this.edConName.TabIndex = 2;
+      this.edConName.ModifiedChanged += new System.EventHandler(this.tbConName_ModifiedChanged);
       // 
       // listBox1
       // 
       this.listBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
       this.listBox1.FormattingEnabled = true;
       this.listBox1.ItemHeight = 15;
-      this.listBox1.Items.AddRange(new object[] {
-            "Enter Info click Save"});
       this.listBox1.Location = new System.Drawing.Point(61, 87);
       this.listBox1.Name = "listBox1";
       this.listBox1.Size = new System.Drawing.Size(181, 150);
@@ -246,7 +261,7 @@
       this.tabBuildIt.Location = new System.Drawing.Point(4, 24);
       this.tabBuildIt.Margin = new System.Windows.Forms.Padding(2);
       this.tabBuildIt.Name = "tabBuildIt";
-      this.tabBuildIt.Size = new System.Drawing.Size(796, 428);
+      this.tabBuildIt.Size = new System.Drawing.Size(796, 525);
       this.tabBuildIt.TabIndex = 1;
       this.tabBuildIt.Text = "Build It";
       this.tabBuildIt.UseVisualStyleBackColor = true;
@@ -265,9 +280,12 @@
       // 
       // splitContainer1.Panel2
       // 
+      this.splitContainer1.Panel2.AutoScroll = true;
       this.splitContainer1.Panel2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-      this.splitContainer1.Size = new System.Drawing.Size(794, 426);
-      this.splitContainer1.SplitterDistance = 397;
+      this.splitContainer1.Panel2.Controls.Add(this.edError);
+      this.splitContainer1.Size = new System.Drawing.Size(794, 523);
+      this.splitContainer1.SplitterDistance = 436;
+      this.splitContainer1.SplitterWidth = 3;
       this.splitContainer1.TabIndex = 1;
       // 
       // splitContainer2
@@ -283,8 +301,8 @@
       // 
       // splitContainer2.Panel2
       // 
-      this.splitContainer2.Panel2.Controls.Add(this.tabControl1);
-      this.splitContainer2.Size = new System.Drawing.Size(794, 397);
+      this.splitContainer2.Panel2.Controls.Add(this.tabControlTextEditors);
+      this.splitContainer2.Size = new System.Drawing.Size(794, 436);
       this.splitContainer2.SplitterDistance = 243;
       this.splitContainer2.TabIndex = 0;
       // 
@@ -310,23 +328,23 @@
       this.tvMain.Location = new System.Drawing.Point(0, 26);
       this.tvMain.Name = "tvMain";
       this.tvMain.SelectedImageIndex = 0;
-      this.tvMain.Size = new System.Drawing.Size(241, 373);
+      this.tvMain.Size = new System.Drawing.Size(241, 412);
       this.tvMain.TabIndex = 0;
       this.tvMain.BeforeExpand += new System.Windows.Forms.TreeViewCancelEventHandler(this.TvMain_BeforeExpand);
       this.tvMain.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.tvMain_AfterSelect);
       // 
-      // tabControl1
+      // tabControlTextEditors
       // 
-      this.tabControl1.Controls.Add(this.tabSQL);
-      this.tabControl1.Controls.Add(this.tabCSharp);
-      this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.tabControl1.Location = new System.Drawing.Point(0, 0);
-      this.tabControl1.Margin = new System.Windows.Forms.Padding(0);
-      this.tabControl1.Name = "tabControl1";
-      this.tabControl1.Padding = new System.Drawing.Point(6, 2);
-      this.tabControl1.SelectedIndex = 0;
-      this.tabControl1.Size = new System.Drawing.Size(547, 397);
-      this.tabControl1.TabIndex = 0;
+      this.tabControlTextEditors.Controls.Add(this.tabSQL);
+      this.tabControlTextEditors.Controls.Add(this.tabCSharp);
+      this.tabControlTextEditors.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.tabControlTextEditors.Location = new System.Drawing.Point(0, 0);
+      this.tabControlTextEditors.Margin = new System.Windows.Forms.Padding(0);
+      this.tabControlTextEditors.Name = "tabControlTextEditors";
+      this.tabControlTextEditors.Padding = new System.Drawing.Point(6, 2);
+      this.tabControlTextEditors.SelectedIndex = 0;
+      this.tabControlTextEditors.Size = new System.Drawing.Size(547, 436);
+      this.tabControlTextEditors.TabIndex = 0;
       // 
       // tabSQL
       // 
@@ -334,7 +352,7 @@
       this.tabSQL.Location = new System.Drawing.Point(4, 22);
       this.tabSQL.Name = "tabSQL";
       this.tabSQL.Padding = new System.Windows.Forms.Padding(3);
-      this.tabSQL.Size = new System.Drawing.Size(539, 371);
+      this.tabSQL.Size = new System.Drawing.Size(539, 410);
       this.tabSQL.TabIndex = 1;
       this.tabSQL.Text = "SQL";
       this.tabSQL.UseVisualStyleBackColor = true;
@@ -382,7 +400,7 @@
       this.tbSQL.RightBracket = ')';
       this.tbSQL.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(0)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
       this.tbSQL.ServiceColors = ((FastColoredTextBoxNS.ServiceColors)(resources.GetObject("tbSQL.ServiceColors")));
-      this.tbSQL.Size = new System.Drawing.Size(533, 365);
+      this.tbSQL.Size = new System.Drawing.Size(533, 404);
       this.tbSQL.TabIndex = 0;
       this.tbSQL.Text = "tbSQL";
       this.tbSQL.TextAreaBorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
@@ -393,7 +411,7 @@
       this.tabCSharp.Controls.Add(this.tbCSharp);
       this.tabCSharp.Location = new System.Drawing.Point(4, 22);
       this.tabCSharp.Name = "tabCSharp";
-      this.tabCSharp.Size = new System.Drawing.Size(539, 371);
+      this.tabCSharp.Size = new System.Drawing.Size(539, 410);
       this.tabCSharp.TabIndex = 2;
       this.tabCSharp.Text = "C#";
       this.tabCSharp.UseVisualStyleBackColor = true;
@@ -441,17 +459,64 @@
       this.tbCSharp.RightBracket2 = '}';
       this.tbCSharp.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(255)))));
       this.tbCSharp.ServiceColors = ((FastColoredTextBoxNS.ServiceColors)(resources.GetObject("tbCSharp.ServiceColors")));
-      this.tbCSharp.Size = new System.Drawing.Size(539, 371);
+      this.tbCSharp.Size = new System.Drawing.Size(539, 410);
       this.tbCSharp.TabIndex = 0;
       this.tbCSharp.Text = "fastColoredTextBox1";
       this.tbCSharp.Zoom = 100;
+      // 
+      // edError
+      // 
+      this.edError.AutoCompleteBracketsList = new char[] {
+        '(',
+        ')',
+        '{',
+        '}',
+        '[',
+        ']',
+        '\"',
+        '\"',
+        '\'',
+        '\''};
+      this.edError.AutoIndentCharsPatterns = "\r\n^\\s*[\\w\\.]+(\\s\\w+)?\\s*(?<range>=)\\s*(?<range>[^;=]+);\r\n^\\s*(case|default)\\s*[^:" +
+    "]*(?<range>:)\\s*(?<range>[^;]+);\r\n";
+      this.edError.AutoScrollMinSize = new System.Drawing.Size(27, 14);
+      this.edError.BackBrush = null;
+      this.edError.BackColor = System.Drawing.Color.Black;
+      this.edError.BracketsHighlightStrategy = FastColoredTextBoxNS.BracketsHighlightStrategy.Strategy2;
+      this.edError.CaretColor = System.Drawing.Color.White;
+      this.edError.CharHeight = 14;
+      this.edError.CharWidth = 8;
+      this.edError.DefaultMarkerSize = 8;
+      this.edError.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
+      this.edError.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.edError.FindForm = null;
+      this.edError.ForeColor = System.Drawing.Color.White;
+      this.edError.GoToForm = null;
+      this.edError.Hotkeys = resources.GetString("edError.Hotkeys");
+      this.edError.IndentBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+      this.edError.IsReplaceMode = false;
+      this.edError.Language = FastColoredTextBoxNS.Text.Language.CSharp;
+      this.edError.LeftBracket = '(';
+      this.edError.LeftBracket2 = '{';
+      this.edError.LineNumberColor = System.Drawing.Color.Gold;
+      this.edError.Location = new System.Drawing.Point(0, 0);
+      this.edError.Name = "edError";
+      this.edError.Paddings = new System.Windows.Forms.Padding(0);
+      this.edError.ReplaceForm = null;
+      this.edError.RightBracket = ')';
+      this.edError.RightBracket2 = '}';
+      this.edError.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(255)))));
+      this.edError.ServiceColors = ((FastColoredTextBoxNS.ServiceColors)(resources.GetObject("edError.ServiceColors")));
+      this.edError.Size = new System.Drawing.Size(794, 84);
+      this.edError.TabIndex = 2;
+      this.edError.Zoom = 100;
       // 
       // MainForm
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-      this.ClientSize = new System.Drawing.Size(804, 456);
+      this.ClientSize = new System.Drawing.Size(804, 553);
       this.Controls.Add(this.tabControlMain);
       this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
       this.Name = "MainForm";
@@ -462,17 +527,19 @@
       this.tabWelcome.PerformLayout();
       this.tabBuildIt.ResumeLayout(false);
       this.splitContainer1.Panel1.ResumeLayout(false);
+      this.splitContainer1.Panel2.ResumeLayout(false);
       ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
       this.splitContainer1.ResumeLayout(false);
       this.splitContainer2.Panel1.ResumeLayout(false);
       this.splitContainer2.Panel2.ResumeLayout(false);
       ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
       this.splitContainer2.ResumeLayout(false);
-      this.tabControl1.ResumeLayout(false);
+      this.tabControlTextEditors.ResumeLayout(false);
       this.tabSQL.ResumeLayout(false);
       ((System.ComponentModel.ISupportInitialize)(this.tbSQL)).EndInit();
       this.tabCSharp.ResumeLayout(false);
       ((System.ComponentModel.ISupportInitialize)(this.tbCSharp)).EndInit();
+      ((System.ComponentModel.ISupportInitialize)(this.edError)).EndInit();
       this.ResumeLayout(false);
 
     }
@@ -486,23 +553,25 @@
     private SplitContainer splitContainer2;
     private Panel panel1;
     private TreeView tvMain;
-    private TabControl tabControl1;
+    private TabControl tabControlTextEditors;
     private TabPage tabSQL;
     private TabPage tabCSharp;
     private Button btnSaveCon;
-    private TextBox tbPassword;
-    private TextBox tbUserName;
-    private TextBox tbDatabase;
-    private TextBox tbServer;
+    private TextBox edPassword;
+    private TextBox edUserName;
+    private TextBox edDatabase;
+    private TextBox edServer;
     private Label label6;
     private Label label5;
     private Label label4;
     private Label label3;
     private Label label2;
-    private TextBox tbConName;
+    private TextBox edConName;
     private ListBox listBox1;
     private Label label1;
     private FastColoredTextBoxNS.FastColoredTextBox tbSQL;
     private FastColoredTextBoxNS.FastColoredTextBox tbCSharp;
+    private Button btnRemoveConnection;
+    private FastColoredTextBoxNS.FastColoredTextBox edError;
   }
 }

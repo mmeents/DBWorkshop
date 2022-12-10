@@ -6,20 +6,39 @@
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
+    <StartupObject>DBWorkshop.Program</StartupObject>
+    <ApplicationIcon>Images\flame-_1_.ico</ApplicationIcon>
+    <Copyright>Copyright © 2022 Sky High Productions, LLC</Copyright>
+    <PackageProjectUrl>https://github.com/mmeents/DBWorkshop</PackageProjectUrl>
+    <PackageIcon>flame.png</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/mmeents/DBWorkshop</RepositoryUrl>
+    <PackageTags>Database Code Generating App</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Include="Images\flame-_1_.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\StaticExtensions\flame.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="..\StaticExtensions\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AppCrypto" Version="1.0.1" />
     <PackageReference Include="Dapper" Version="2.0.123" />
     <PackageReference Include="Dax-FCTB" Version="2.16.26.120" />
     <PackageReference Include="StaticExtensions" Version="2.0.2" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="7.0.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.5" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="AppCrypto">
-      <HintPath>..\AppCrypto\AppCrypto\bin\Release\net6.0\AppCrypto.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
 </Project>
