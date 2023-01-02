@@ -122,8 +122,9 @@ namespace DBWorkshop {
                     "select name db from master.dbo.sysdatabases " +
                     "where (dbid > 2) and (not (name in ('model','msdb')))  order by name");
                 }
-                foreach (DatabaseResultModel dr in databases) {                                
-                  TreeNode atn = new TreeNode(dr.Db, 1, 1);
+                foreach (DatabaseResultModel dr in databases) {
+                  DBNode atn = new DBNode(aDBI1, dr.Db);
+                  //TreeNode atn = new TreeNode(dr.Db, 1, 1);
                   atn.Nodes.Add("PlaceHolder");
                   e.Node.Nodes.Add(atn);
                 }    
@@ -139,7 +140,7 @@ namespace DBWorkshop {
             case 1:  // database Level
               string sdb = e.Node.Text; 
               e.Node.Nodes.Clear();
-              DbConnectionInfo aDBCI = ((DBConNode)e.Node.Parent)._dBConnection;              
+              DbConnectionInfo aDBCI = ((DBNode)e.Node)._dBConnection;              
               try {  // ObjType, tbl, col, ColType, ColLen
                 IEnumerable<DBObjectsResultModel> dBObjects;
                 using (SqlConnection connection = new SqlConnection(aDBCI.ConnectionString)) {
@@ -242,23 +243,29 @@ namespace DBWorkshop {
       //edSQLCursor.Text = "Not Implemented see Table or View item on tree.";
       //edWiki.Text = "";
     }
-    public void PrepareFolder(TreeNode tnFolder) {
-      string s = "";
-      string c = "";
+    public void PrepareFolder(TreeNode tnFolder) {      
+      DbConnectionInfo? ci = GetDbConnectionInfo(tnFolder);
+      string c = ""+ CodeStatic.GetNamespaceText(ci?.InitialCatalog??"NeedsNamespace");
       int ii = 0;
+      int i = 0;
       foreach(TreeNode tnNode in tnFolder.Nodes) {
         ii = tnNode.ImageIndex;
         switch (ii) {
-          case 3: c += tnNode.GenerateCSharpRepoLikeClassFromTable(); break;
-          case 4: c += tnNode.GenerateCSharpRepoLikeClassFromTable(); break;
+          case 3: c += tnNode.GenerateCSharpRepoLikeClassFromTable(false); break;
+          case 4: c += tnNode.GenerateCSharpRepoLikeClassFromTable(false); break;
           case 5: c += tnNode.GenerateCSharpExecStoredProc(); break;
           case 6:  break;
         }
+        if (i==0 && c.Length>2) { 
+          c = c.Substring(0,c.Length-2);
+        }
+        i++;
+
       }
 
       tbSQL.Text = "SQL Not Implemented Yet";
       if (ii == 3 || ii == 4 || ii == 5 ) {
-        tbCSharp.Text = "  class SomeRepo {" +CodeStatic.nl+ c +"  }";
+        tbCSharp.Text = c + CodeStatic.nl+"  }";
       } else 
         tbCSharp.Text = "C# Not Implemented yet ";
       //edSQLCursor.Text = "Not Implemented see Table or View item on tree.";
@@ -270,8 +277,8 @@ namespace DBWorkshop {
       //edSQLCursor.Text = "Not Implemented see Table or View item on tree.";
       //edWiki.Text = "";
     }
-    public void PrepareTable(TreeNode tnTable) {
-      tbSQL.Text = tnTable.GenerateSQLAddUpdateStoredProc();
+    public async void PrepareTable(TreeNode tnTable) {
+      tbSQL.Text = tnTable.GenerateSQLAddUpdateStoredProc()+ CodeStatic.nl+CodeStatic.nl + await GetCreateTableSQL(tnTable);
       tbCSharp.Text = tnTable.GenerateCSharpRepoLikeClassFromTable();
       //edSQLCursor.Text = "Not Implemented see Table or View item on tree.";
       //edWiki.Text = "";
@@ -283,8 +290,8 @@ namespace DBWorkshop {
         //edSQLCursor.Text = "Not Implemented see Table or View item on tree.";
         //edWiki.Text = "";
       }
-    public void PrepareView(TreeNode tnView) {
-      tbSQL.Text = "SQL Not Implemented Yet";
+    public async void PrepareView(TreeNode tnView) {
+      tbSQL.Text = await GetHelpTextAsync(tnView);
       tbCSharp.Text = tnView.GenerateCSharpRepoLikeClassFromTable();
       //edSQLCursor.Text = "Not Implemented see Table or View item on tree.";
       //edWiki.Text = "";
@@ -292,28 +299,44 @@ namespace DBWorkshop {
     #endregion
     #region Database Code Gen functions
     public async Task<string> GetHelpTextAsync(TreeNode cn) { // expecting a Function or Procedure as cn. 
-      string ObjName = cn.Text.ParseFirst(" ");
-      string sDBName = cn.Parent.Parent.Text.ParseString(":", 0);      
-      DbConnectionInfo? dbci = ((DBConNode)cn.Parent.Parent.Parent)._dBConnection;      
-      string sResult = "";      
-      if (dbci != null) {        
-        try {          
-          IEnumerable<DatabaseTextResultModel> result;          
-          using (SqlConnection connection = new SqlConnection(dbci.ConnectionString)) {
-              result = await connection.QueryAsync<DatabaseTextResultModel>(sDBName + ".sys.sp_helptext", new { ObjName }, commandType: CommandType.StoredProcedure);
-           }         
-          if (result.Any()) {
-            foreach (DatabaseTextResultModel dr in result) {
-              sResult += dr.Text;
+      string sResult = "";
+      string ObjName = cn.Text.ParseFirst(" ");      
+      DbConnectionInfo? dbci = GetDbConnectionInfo(cn);
+      if (dbci != null) {
+        string sDBName = dbci.InitialCatalog;        
+        if (dbci != null) {        
+          try {          
+            IEnumerable<DatabaseTextResultModel> result;          
+            using (SqlConnection connection = new SqlConnection(dbci.ConnectionString)) {
+                result = await connection.QueryAsync<DatabaseTextResultModel>(sDBName + ".sys.sp_helptext", new { ObjName }, commandType: CommandType.StoredProcedure);
+             }         
+            if (result.Any()) {
+              foreach (DatabaseTextResultModel dr in result) {
+                sResult += dr.Text;
+              }
             }
+          } catch (Exception e) {
+            WriteError($"Error Database:{sDBName}  ObjName:{ObjName} while accessing sp_HelpText, " + e.Message);
           }
-        } catch (Exception e) {
-          WriteError($"Error Database:{sDBName}  ObjName:{ObjName} while accessing sp_HelpText, " + e.Message);
         }
       }
       return sResult;
       
     }
+
+    public async Task<string> GetCreateTableSQL(TreeNode tnTable) {
+      string R = $"// Drop Table {tnTable.Text}"+CodeStatic.nl + CodeStatic.nl;
+      string sTableName = tnTable.Text;
+      DbConnectionInfo? dbci = GetDbConnectionInfo(tnTable);      
+      if (dbci != null) {  
+        string SQLToGetCreate =  CodeStatic.GenerateCreateTableSQL(tnTable);
+        using (SqlConnection connection = new SqlConnection(dbci.ConnectionString)) { 
+          R += await connection.QueryFirstOrDefaultAsync<string>(SQLToGetCreate);
+        }
+      }
+      return R;
+    }
+
     #endregion
 
     private void btnRemoveConnection_Click(object sender, EventArgs e) {
@@ -321,6 +344,70 @@ namespace DBWorkshop {
       if (connName != "default") { 
         _dbConnectionService.RemoveConnection(connName);        
       }
+    }   
+
+    private void copyToolStripMenuItem_Click(object sender, EventArgs e) {
+      if (tabControlTextEditors.SelectedTab == tabSQL) { 
+        Clipboard.SetText(tbSQL.SelectedText);
+      } else if (tabControlTextEditors.SelectedTab == tabCSharp) {
+        Clipboard.SetText(tbCSharp.SelectedText);
+      }
     }
+
+    private void tabControlTextEditors_Selected(object sender, TabControlEventArgs e) { }
+
+    private void MenuStripCSharp_Opening(object sender, System.ComponentModel.CancelEventArgs e) { }
+
+    private DbConnectionInfo? GetDbConnectionInfo(TreeNode ThisNode ) { 
+      if (ThisNode == null) { 
+        throw new Exception("Node is null");
+      }
+      if (ThisNode is DBNode) {
+        DBNode ConNode = (DBNode)ThisNode;
+        return ConNode._dBConnection;
+      }
+      if (!ThisNode.Parent.IsNull() ) {
+        return GetDbConnectionInfo(ThisNode.Parent);
+      } else { 
+        return null;
+      }
+    }
+    private async void MenuExecuteSql_ClickAsync(object sender, EventArgs e) {
+      try { 
+        string s = tbSQL.SelectedText;
+        TreeNode sn = tvMain.SelectedNode;
+        DbConnectionInfo? con = GetDbConnectionInfo(sn);
+        if ((con != null) && (MessageBox.Show(this, s, $"Execut SQL against {con.InitialCatalog}?", MessageBoxButtons.YesNo ) == DialogResult.Yes)) {                      
+            WriteError("executing: " + s);
+            using (SqlConnection connection = new SqlConnection(con.ConnectionString)) {
+              await connection.ExecuteAsync(s);
+            }                   
+        } else {
+          WriteError("Failed to find database connection string...");
+        }
+      } catch (Exception ex) { 
+        WriteError(ex.AsWalkExcTreePath());
+      }
+    }
+
+    private void toolStripMenuItem2_Click(object sender, EventArgs e) {
+      DialogResult DR = SD.ShowDialog();
+      SD.InitialDirectory = Environment.CurrentDirectory;
+      if (DR == DialogResult.OK) { 
+        string FilePathAndName = SD.FileName;
+        File.WriteAllText( FilePathAndName , tbCSharp.SelectedText );
+      }
+    }
+
+    private void saveSelectedToFileToolStripMenuItem_Click(object sender, EventArgs e) {
+      DialogResult DR = SD.ShowDialog();
+      SD.InitialDirectory = Environment.CurrentDirectory;
+      if (DR == DialogResult.OK) {
+        string FilePathAndName = SD.FileName;
+        File.WriteAllText(FilePathAndName, tbCSharp.SelectedText);
+      }
+    }
+
+
   }
 }

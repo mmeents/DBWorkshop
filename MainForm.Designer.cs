@@ -48,11 +48,19 @@
       this.panel1 = new System.Windows.Forms.Panel();
       this.tvMain = new System.Windows.Forms.TreeView();
       this.tabControlTextEditors = new System.Windows.Forms.TabControl();
+      this.MenuStripSql = new System.Windows.Forms.ContextMenuStrip(this.components);
+      this.copyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.saveFileAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.tabSQL = new System.Windows.Forms.TabPage();
       this.tbSQL = new FastColoredTextBoxNS.FastColoredTextBox();
       this.tabCSharp = new System.Windows.Forms.TabPage();
       this.tbCSharp = new FastColoredTextBoxNS.FastColoredTextBox();
+      this.MenuStripCSharp = new System.Windows.Forms.ContextMenuStrip(this.components);
+      this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+      this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
       this.edError = new FastColoredTextBoxNS.FastColoredTextBox();
+      this.SD = new System.Windows.Forms.SaveFileDialog();
+      this.saveSelectedToFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.tabControlMain.SuspendLayout();
       this.tabWelcome.SuspendLayout();
       this.tabBuildIt.SuspendLayout();
@@ -65,10 +73,12 @@
       this.splitContainer2.Panel2.SuspendLayout();
       this.splitContainer2.SuspendLayout();
       this.tabControlTextEditors.SuspendLayout();
+      this.MenuStripSql.SuspendLayout();
       this.tabSQL.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)(this.tbSQL)).BeginInit();
       this.tabCSharp.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)(this.tbCSharp)).BeginInit();
+      this.MenuStripCSharp.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)(this.edError)).BeginInit();
       this.SuspendLayout();
       // 
@@ -335,6 +345,7 @@
       // 
       // tabControlTextEditors
       // 
+      this.tabControlTextEditors.ContextMenuStrip = this.MenuStripSql;
       this.tabControlTextEditors.Controls.Add(this.tabSQL);
       this.tabControlTextEditors.Controls.Add(this.tabCSharp);
       this.tabControlTextEditors.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -345,6 +356,31 @@
       this.tabControlTextEditors.SelectedIndex = 0;
       this.tabControlTextEditors.Size = new System.Drawing.Size(547, 436);
       this.tabControlTextEditors.TabIndex = 0;
+      this.tabControlTextEditors.Selected += new System.Windows.Forms.TabControlEventHandler(this.tabControlTextEditors_Selected);
+      // 
+      // MenuStripSql
+      // 
+      this.MenuStripSql.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.copyToolStripMenuItem,
+            this.saveFileAsToolStripMenuItem,
+            this.saveSelectedToFileToolStripMenuItem});
+      this.MenuStripSql.Name = "MenuStripSql";
+      this.MenuStripSql.Size = new System.Drawing.Size(182, 92);
+      this.MenuStripSql.Text = "Copy";
+      // 
+      // copyToolStripMenuItem
+      // 
+      this.copyToolStripMenuItem.Name = "copyToolStripMenuItem";
+      this.copyToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
+      this.copyToolStripMenuItem.Text = "Copy";
+      this.copyToolStripMenuItem.Click += new System.EventHandler(this.copyToolStripMenuItem_Click);
+      // 
+      // saveFileAsToolStripMenuItem
+      // 
+      this.saveFileAsToolStripMenuItem.Name = "saveFileAsToolStripMenuItem";
+      this.saveFileAsToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
+      this.saveFileAsToolStripMenuItem.Text = "Execute Selected Sql";
+      this.saveFileAsToolStripMenuItem.Click += new System.EventHandler(this.MenuExecuteSql_ClickAsync);
       // 
       // tabSQL
       // 
@@ -372,13 +408,14 @@
         '\''};
       this.tbSQL.AutoIndent = false;
       this.tbSQL.AutoIndentCharsPatterns = "";
-      this.tbSQL.AutoScrollMinSize = new System.Drawing.Size(67, 14);
+      this.tbSQL.AutoScrollMinSize = new System.Drawing.Size(42, 14);
       this.tbSQL.BackBrush = null;
       this.tbSQL.BackColor = System.Drawing.Color.Black;
       this.tbSQL.CaretColor = System.Drawing.Color.White;
       this.tbSQL.CharHeight = 14;
       this.tbSQL.CharWidth = 8;
       this.tbSQL.CommentPrefix = "--";
+      this.tbSQL.ContextMenuStrip = this.MenuStripSql;
       this.tbSQL.CurrentLineColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
       this.tbSQL.DefaultMarkerSize = 8;
       this.tbSQL.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
@@ -438,6 +475,7 @@
       this.tbCSharp.CaretColor = System.Drawing.Color.White;
       this.tbCSharp.CharHeight = 14;
       this.tbCSharp.CharWidth = 8;
+      this.tbCSharp.ContextMenuStrip = this.MenuStripCSharp;
       this.tbCSharp.DefaultMarkerSize = 8;
       this.tbCSharp.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
       this.tbCSharp.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -464,6 +502,28 @@
       this.tbCSharp.Text = "fastColoredTextBox1";
       this.tbCSharp.Zoom = 100;
       // 
+      // MenuStripCSharp
+      // 
+      this.MenuStripCSharp.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripMenuItem1,
+            this.toolStripMenuItem2});
+      this.MenuStripCSharp.Name = "MenuStripSql";
+      this.MenuStripCSharp.Size = new System.Drawing.Size(136, 48);
+      this.MenuStripCSharp.Text = "Copy";
+      // 
+      // toolStripMenuItem1
+      // 
+      this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+      this.toolStripMenuItem1.Size = new System.Drawing.Size(135, 22);
+      this.toolStripMenuItem1.Text = "Copy";
+      // 
+      // toolStripMenuItem2
+      // 
+      this.toolStripMenuItem2.Name = "toolStripMenuItem2";
+      this.toolStripMenuItem2.Size = new System.Drawing.Size(135, 22);
+      this.toolStripMenuItem2.Text = "Save File As";
+      this.toolStripMenuItem2.Click += new System.EventHandler(this.toolStripMenuItem2_Click);
+      // 
       // edError
       // 
       this.edError.AutoCompleteBracketsList = new char[] {
@@ -479,7 +539,7 @@
         '\''};
       this.edError.AutoIndentCharsPatterns = "\r\n^\\s*[\\w\\.]+(\\s\\w+)?\\s*(?<range>=)\\s*(?<range>[^;=]+);\r\n^\\s*(case|default)\\s*[^:" +
     "]*(?<range>:)\\s*(?<range>[^;]+);\r\n";
-      this.edError.AutoScrollMinSize = new System.Drawing.Size(27, 14);
+      this.edError.AutoScrollMinSize = new System.Drawing.Size(2, 14);
       this.edError.BackBrush = null;
       this.edError.BackColor = System.Drawing.Color.Black;
       this.edError.BracketsHighlightStrategy = FastColoredTextBoxNS.BracketsHighlightStrategy.Strategy2;
@@ -511,6 +571,17 @@
       this.edError.TabIndex = 2;
       this.edError.Zoom = 100;
       // 
+      // SD
+      // 
+      this.SD.DefaultExt = "*.cs";
+      // 
+      // saveSelectedToFileToolStripMenuItem
+      // 
+      this.saveSelectedToFileToolStripMenuItem.Name = "saveSelectedToFileToolStripMenuItem";
+      this.saveSelectedToFileToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
+      this.saveSelectedToFileToolStripMenuItem.Text = "Save Selected to File";
+      this.saveSelectedToFileToolStripMenuItem.Click += new System.EventHandler(this.saveSelectedToFileToolStripMenuItem_Click);
+      // 
       // MainForm
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -535,10 +606,12 @@
       ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
       this.splitContainer2.ResumeLayout(false);
       this.tabControlTextEditors.ResumeLayout(false);
+      this.MenuStripSql.ResumeLayout(false);
       this.tabSQL.ResumeLayout(false);
       ((System.ComponentModel.ISupportInitialize)(this.tbSQL)).EndInit();
       this.tabCSharp.ResumeLayout(false);
       ((System.ComponentModel.ISupportInitialize)(this.tbCSharp)).EndInit();
+      this.MenuStripCSharp.ResumeLayout(false);
       ((System.ComponentModel.ISupportInitialize)(this.edError)).EndInit();
       this.ResumeLayout(false);
 
@@ -573,5 +646,13 @@
     private FastColoredTextBoxNS.FastColoredTextBox tbCSharp;
     private Button btnRemoveConnection;
     private FastColoredTextBoxNS.FastColoredTextBox edError;
+    private ContextMenuStrip MenuStripSql;
+    private ToolStripMenuItem copyToolStripMenuItem;
+    private ToolStripMenuItem saveFileAsToolStripMenuItem;
+    private SaveFileDialog SD;
+    private ContextMenuStrip MenuStripCSharp;
+    private ToolStripMenuItem toolStripMenuItem1;
+    private ToolStripMenuItem toolStripMenuItem2;
+    private ToolStripMenuItem saveSelectedToFileToolStripMenuItem;
   }
 }
