@@ -56,8 +56,8 @@ namespace DBWorkshop {
     public static string SQLDefNullValueSQL(string sqlType) {
       string w = sqlType.ToLower().ParseString(" ()", 0);
       string result = "";
-      if (w == "char") result = "\"\"";
-      else if (w == "varchar") result = "\"\"";
+      if (w == "char") result = "''";
+      else if (w == "varchar") result = "''";
       else if (w == "int") result = "0";
       else if (w == "bigint") result = "0";
       else if (w == "binary") result = "null";
@@ -68,17 +68,17 @@ namespace DBWorkshop {
       else if (w == "image") result = "null";
       else if (w == "money") result = "0.0";
       else if (w == "numeric") result = "0.0";
-      else if (w == "nchar") result = "\"\"";
-      else if (w == "ntext") result = "\"\"";
-      else if (w == "nvarchar") result = "\"\"";
+      else if (w == "nchar") result = "''";
+      else if (w == "ntext") result = "''";
+      else if (w == "nvarchar") result = "''";
       else if (w == "real") result = "0.0";
       else if (w == "smallint") result = "0";
       else if (w == "smallmoney") result = "0.0";
       else if (w == "smalldatetime") result = "null";
-      else if (w == "text") result = "\"\"";
+      else if (w == "text") result = "''";
       else if (w == "timestamp") result = "null";
       else if (w == "tinyint") result = "0";
-      else if (w == "uniqueidentifier") result = "\"\"";
+      else if (w == "uniqueidentifier") result = "''";
       else if (w == "varbinary") result = "null";
       return result;
     }
@@ -100,13 +100,13 @@ namespace DBWorkshop {
         if (sFTT == "true") {
           sFTT = "false";
           if (IncludeFirstCol) {
-            sRes = "@" + tn.Text.ParseString(" ()", 0);
+            sRes = "@" + tn.Text.ParseString(" ()@", 0);
           }
         } else {
           if (sRes == "") {
-            sRes = "@" + tn.Text.ParseString(" ()", 0);
+            sRes = "@" + tn.Text.ParseString(" ()@", 0);
           } else {
-            sRes = sRes + ", @" + tn.Text.ParseString(" ()", 0);
+            sRes = sRes + ", @" + tn.Text.ParseString(" ()@", 0);
           }
         }
       }
@@ -402,7 +402,7 @@ namespace DBWorkshop {
     public static string GetDeclareSQLParam(this TreeNode tnStProc) { 
       string s = "";
       foreach(TreeNode cn in tnStProc.Nodes) { 
-        s = s +"declare @"+ cn.Text + " set @" +cn.Text.ParseFirst(" ")+" = "+ SQLDefNullValueSQL(cn.Text.ParseLast(" "))+";" + CodeStatic.nl;
+        s = s +"declare "+ cn.Text + " set " +cn.Text.ParseFirst(" ")+" = "+ SQLDefNullValueSQL(cn.Text.ParseLast(" "))+";" + CodeStatic.nl;
       }
       return s;
     }

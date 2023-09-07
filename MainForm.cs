@@ -184,7 +184,7 @@ namespace DBWorkshop {
                     if (ObjItemNode != null) {
                       string sVarLen = Convert.ToString(dr.ColumnLen);
                       string sColType = Convert.ToString(dr.ColumnType);
-                      if ((sColType.ToLower() == "varchar") && (sVarLen == "-1")) {
+                      if (((sColType.ToLower() == "varchar") || (sColType.ToLower() == "nvarchar")) && (sVarLen == "-1")) {
                         sVarLen = "MAX";
                       }
                       string sCol = Convert.ToString(dr.ColumnName);
@@ -409,6 +409,17 @@ namespace DBWorkshop {
     }
 
     private void MenuStripSql_Opening(object sender, System.ComponentModel.CancelEventArgs e) {
+
+    }
+
+    private void MainForm_Resize(object sender, EventArgs e) {
+      int newHeight = tvMain.Parent.Height - panel1.Height;
+      if (tvMain.Height != newHeight) {
+        tvMain.Height = newHeight;
+      }
+    }
+
+    private void tabWelcome_Click(object sender, EventArgs e) {
 
     }
   }
